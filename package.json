@@ -1,0 +1,25 @@
+{
+  "name": "nd-db",
+  "version": "0.0.1",
+  "description": "N-dimensional database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fijjas/nd-db.git"
+  },
+  "author": "Egor Vorozhtsov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fijjas/nd-db/issues"
+  },
+  "homepage": "https://github.com/fijjas/nd-db#readme",
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "joi": "^17.6.0",
+    "lodash": "^4.17.21",
+    "restify": "^8.6.1"
+  }
+}
