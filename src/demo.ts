@@ -1,4 +1,4 @@
-import { CollectionBuilder as Cb, Db, IDbData, Storage } from './index';
+import { Db, IDbData, Storage } from './index';
 import path from 'path';
 
 const storage = new Storage<IDbData>(path.join(__dirname, '..', 'db.json'));
@@ -12,17 +12,18 @@ dump('initial');
 
 db.schema()
   .collection('accounts')
-    .kd(Cb.MAIN_KD_NAME, [...Cb.MAIN_KD_COLUMNS, 'created_at', 'updated_at'])
-    .kd('users', ['name'])
+    .kd('users', ['id', 'name', 'created_at', 'updated_at', 'version'])
+    .sseq('users', 'id')
     .kd('admins', ['admin_role'])
     .kd('customers', ['phone', 'zip'])
     .kd('partners', ['business_name'])
-    .dd('changelog', '', 'updated_at')
+    .dd('changelog', 'users', 'version')
     .dd('customer_location', 'customers', 'zip')
     .up()
   .collection('products')
-    .kd(Cb.MAIN_KD_NAME, [...Cb.MAIN_KD_COLUMNS, 'name', 'price', 'created_at', 'updated_at'])
-    .dd('price_change', Cb.MAIN_KD_NAME, 'price')
+    .kd('products', ['id', 'name', 'price', 'created_at', 'updated_at'])
+    .sseq('products', 'id')
+    .dd('price_change', 'products', 'price')
     .up()
   .exec();
 
@@ -52,9 +53,9 @@ console.log('querying');
 const r = db.query('accounts')
   .kd('users').where({ name: 'egor' }).up()
   .kd('customers').where({ phone: '+12345' }).up()
-  // todo: dd() vs project() - ?
-  .merge([Cb.MAIN_KD_NAME, 'users', 'customers'])
-  .project().by('customer_location').at('90210').up()
+  .merge(['users', 'customers'])
+  .project().by('customer_location').at('90210').up() // todo: reduce() ?
+  .qseq('changelog')
   .exec();
 
 // Note:

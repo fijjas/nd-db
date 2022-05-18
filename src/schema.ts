@@ -1,4 +1,11 @@
-import { IBuilder, IDdSchema, IKdSchema, INestedBuilder, ISchemaExecutor } from './interfaces';
+import {
+  IBuilder,
+  IDdSchema,
+  IKdSchema,
+  INestedBuilder,
+  ISchemaExecutor,
+  IStoreSequencingSchema
+} from './interfaces';
 
 export class Schema implements IBuilder<void> {
   readonly collections: CollectionBuilder[] = [];
@@ -17,11 +24,9 @@ export class Schema implements IBuilder<void> {
 }
 
 export class CollectionBuilder implements INestedBuilder<Schema> {
-  static readonly MAIN_KD_NAME = '';
-  static readonly MAIN_KD_COLUMNS: string[] = ['id'];
-
   readonly kds: IKdSchema[] = [];
   readonly dds: IDdSchema[] = [];
+  storeSequencing: IStoreSequencingSchema|null = null;
 
   constructor(
     private readonly schemaRef: Schema,
@@ -38,8 +43,20 @@ export class CollectionBuilder implements INestedBuilder<Schema> {
     return this;
   }
 
+  sseq(kdName: string, dColumn: string): this {
+    this.storeSequencing = { kdName, dColumn };
+    return this;
+  }
+
   up(): Schema {
+    this.validateSchema();
     this.schemaRef.collections.push(this);
     return this.schemaRef;
+  }
+
+  private validateSchema(): void {
+    if (!this.storeSequencing) {
+      throw new Error('store sequencing is not defined');
+    }
   }
 }

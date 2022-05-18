@@ -13,6 +13,11 @@ export interface IDdSchema {
   kdColumn: string;
 }
 
+export interface IStoreSequencingSchema {
+  kdName: string;
+  dColumn: string;
+}
+
 export interface ICollectionSchema {
   kds: IKdSchema[];
   dds: IDdSchema[];
@@ -61,6 +66,10 @@ export interface IDbData {
 
 export interface IWhere {
   [key: string]: unknown;
+}
+
+export interface IQuerySequencing {
+  dName: string;
 }
 
 export type KdMergeColumnMapper = (kdName: string, columnName: string) => string;

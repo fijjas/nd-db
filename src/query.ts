@@ -1,4 +1,11 @@
-import { IBuilder, INestedBuilder, IProjection, IQueryExecutor, IWhere, KdMergeColumnMapper } from './interfaces';
+import {
+  IBuilder,
+  INestedBuilder,
+  IProjection,
+  IQueryExecutor, IQuerySequencing,
+  IWhere,
+  KdMergeColumnMapper
+} from './interfaces';
 
 export class KdQueryBuilder implements INestedBuilder<QueryBuilder> {
   readonly wheres: IWhere[] = [];
@@ -72,6 +79,7 @@ export class QueryBuilder implements IBuilder<IProjection> {
   readonly mergeKds: string[] = [];
   mergeColumnMapper = QueryBuilder.KD_MERGE_DOTTED;
   readonly projections: ProjectionBuilder[] = [];
+  querySequencing: IQuerySequencing|null = null;
 
   constructor(
     private dbRef: IQueryExecutor,
@@ -86,7 +94,12 @@ export class QueryBuilder implements IBuilder<IProjection> {
     return new DdQueryBuilder(this, ddName, ddValue);
   }
 
-  merge(kds: string[], columnMapper?: KdMergeColumnMapper): QueryBuilder {
+  qseq(dName: string): this {
+    this.querySequencing = { dName };
+    return this;
+  }
+
+  merge(kds: string[], columnMapper?: KdMergeColumnMapper): this {
     this.mergeKds.push(...kds);
     if (columnMapper) {
       this.mergeColumnMapper = columnMapper as KdMergeColumnMapper;
