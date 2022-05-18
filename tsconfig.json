@@ -14,7 +14,5 @@
     "allowJs": true,
     "noImplicitAny": true
   },
-  "compileOnSave": true,
-  "include": [
-  ]
+  "compileOnSave": true
 }

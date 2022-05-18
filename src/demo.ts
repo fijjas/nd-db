@@ -1,5 +1,7 @@
-import { Db, IDbData, Storage } from './index';
 import path from 'path';
+import { IDbData } from './interfaces';
+import { Db } from './db';
+import { Storage } from './storage';
 
 const storage = new Storage<IDbData>(path.join(__dirname, '..', 'db.json'));
 const db = new Db(storage);
@@ -29,8 +31,8 @@ db.schema()
 
 dump('schema executed');
 
-db.edit('accounts').exec(); // todo
-db.edit('products').exec(); // todo
+// db.edit('accounts').exec();
+// db.edit('products').exec();
 
 // db.edit('accounts')
 //   .locate({})
@@ -46,16 +48,16 @@ db.edit('products').exec(); // todo
 //   .set({ '': { updated_at: 1235 }, customers: { name: 'test 2' } })
 //   .save();
 
-dump('edits executed');
-
-console.log('querying');
-
-const r = db.query('accounts')
-  .kd('users').where({ name: 'egor' }).up()
-  .kd('customers').where(['phone', '+12345']).up()
-  .merge(['users', 'customers'])
-  .dr('customer_location').at('90210').up()
-  .qseq('changelog')
-  .exec();
-
-console.log('query result: ', r);
+// dump('edits executed');
+//
+// console.log('querying');
+//
+// const r = db.query('accounts')
+//   .kd('users').where({ name: 'egor' }).up()
+//   .kd('customers').where(['phone', '+12345']).up()
+//   .merge(['users', 'customers'])
+//   .dr('customer_location').at('90210').up()
+//   .qseq('changelog')
+//   .exec();
+//
+// console.log('query result: ', r);

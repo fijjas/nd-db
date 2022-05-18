@@ -7,7 +7,7 @@ export class Storage<DB_DATA_T> {
   }
 
   read(): DB_DATA_T {
-    return JSON.parse(readFileSync(this.path, { encoding: 'utf-8' }));
+    return JSON.parse(readFileSync(this.path, { encoding: 'utf-8' })) || {} as DB_DATA_T;
   }
 
   write(data: DB_DATA_T): void {

@@ -3,14 +3,17 @@ import { EditBuilder } from './editor';
 import { Storage } from './storage';
 import { IDbData, IEditExecutor, IProjection, IQueryExecutor, ISchemaExecutor } from './interfaces';
 import { Schema } from './schema';
+import { Engine } from './engine';
 
 export class Db implements ISchemaExecutor, IEditExecutor, IQueryExecutor {
   private readonly data: IDbData;
+  private readonly engine: Engine;
 
   constructor(
     private readonly storage: Storage<IDbData>,
   ) {
     this.data = this.storage.read();
+    this.engine = new Engine(this.data);
   }
 
   dump(): IDbData {
@@ -27,22 +30,7 @@ export class Db implements ISchemaExecutor, IEditExecutor, IQueryExecutor {
 
   execSchema(s: Schema): void {
     console.log('exec schema', s);
-    // write(): void {
-    //   if (!this.name || !this.kds.length || !this.dds.length) {
-    //     throw new Error('Please define name, key dimensions and data dimensions');
-    //   }
-    //
-    //   if (!this.db.data.collections) {
-    //     this.db.data.collections = {};
-    //   }
-    //   if (this.db.data.collections[this.name]) {
-    //     throw new Error(`Collection "${this.name}" already exists`);
-    //   }
-    //   this.db.data.collections[this.name] = {
-    //     schema: { kds: this.kds, dds: this.dds },
-    //     data: [],
-    //   };
-    // }
+    this.engine.applySchema(s);
   }
 
   edit(collectionName: string): EditBuilder {

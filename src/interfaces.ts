@@ -23,6 +23,7 @@ export interface IStoreSequencingSchema {
 export interface ICollectionSchema {
   kds: IKdSchema[];
   dds: IDdSchema[];
+  storeSequencing: IStoreSequencingSchema;
 }
 
 export interface ICollection {
