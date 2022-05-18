@@ -52,7 +52,7 @@ console.log('querying');
 
 const r = db.query('accounts')
   .kd('users').where({ name: 'egor' }).up()
-  .kd('customers').where({ phone: '+12345' }).up()
+  .kd('customers').where(['phone', '+12345']).up()
   .merge(['users', 'customers'])
   .dr('customer_location').at('90210').up()
   .qseq('changelog')

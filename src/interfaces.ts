@@ -66,9 +66,19 @@ export interface IDbData {
   };
 }
 
-export interface IWhere { // todo: operators support (the definition is confusing as it looks like a d-reducer)
-  [key: string]: IValue;
+export enum WhereOperator {
+  EQ = '==',
+  // EQQ = '===',
+  GT = '>',
+  GTE = '>=',
+  LT = '<',
+  LTE = '<=',
 }
+
+export type IWhereArrOp = [columnName: string, operator: WhereOperator, value: IValue];
+export type IWhereArrEq = [columnName: string, value: IValue];
+export interface IWhereObjEq { [columnName: string]: IValue }
+export type IWhere = IWhereArrOp | IWhereArrEq | IWhereObjEq;
 
 export interface IQuerySequencing {
   dName: string;
