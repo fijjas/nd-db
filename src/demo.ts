@@ -54,15 +54,8 @@ const r = db.query('accounts')
   .kd('users').where({ name: 'egor' }).up()
   .kd('customers').where({ phone: '+12345' }).up()
   .merge(['users', 'customers'])
-  .project().by('customer_location').at('90210').up() // todo: reduce() ?
+  .dr('customer_location').at('90210').up()
   .qseq('changelog')
   .exec();
-
-// Note:
-// kd() - merge column vectors _|_ -> _,_,_
-// dd() - apply a filter to a tensor in the hypercube
-// project() - for the nodes filtered by kd()'s and dd()'s collapse the hypercube into (n-1) per call
-// TODO: how to rotate kd-vector to dd-vector ? (for eg., columns -> changelog), - something like _.groupBy() => { [key: ddValue]: [...] }
-// (kd1..., kd2..., kd3..., ...) -> 90º -> (ddVal1, ddVal2, ddVal3, ddVal4, ...)
 
 console.log('query result: ', r);

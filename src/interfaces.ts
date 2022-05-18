@@ -2,6 +2,8 @@ import { QueryBuilder } from './query';
 import { EditBuilder } from './editor';
 import { Schema } from './schema';
 
+export type IValue = unknown;
+
 export interface IKdSchema {
   name: string;
   columns: string[];
@@ -49,7 +51,7 @@ export interface INestedBuilder<PARENT_T> {
 }
 
 export interface IDataNode {
-  [key: string]: unknown;
+  [key: string]: IValue;
 }
 
 export type IDdNode = string;
@@ -64,8 +66,8 @@ export interface IDbData {
   };
 }
 
-export interface IWhere {
-  [key: string]: unknown;
+export interface IWhere { // todo: operators support (the definition is confusing as it looks like a d-reducer)
+  [key: string]: IValue;
 }
 
 export interface IQuerySequencing {
@@ -74,7 +76,10 @@ export interface IQuerySequencing {
 
 export type KdMergeColumnMapper = (kdName: string, columnName: string) => string;
 
-export interface IProjectionNode extends IDataNode {
+export type DimensionalityReductionMapReducer = (acc: IValue, node: IDataNode, sseqId: IValue, index: number) => IValue;
+
+/** @deprecated */
+export interface IProjectionNode extends IDataNode { // todo: consider renaming this as it belongs to sequencing...
   [ddIdentifier: string]: IDdNode;
 }
 

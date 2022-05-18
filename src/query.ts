@@ -1,4 +1,5 @@
 import {
+  DimensionalityReductionMapReducer,
   IBuilder,
   INestedBuilder,
   IProjection,
@@ -47,26 +48,54 @@ export class DdQueryBuilder implements INestedBuilder<QueryBuilder> {
   }
 }
 
-export class ProjectionBuilder implements INestedBuilder<QueryBuilder> {
+export class DimensionalityReductionBuilder implements INestedBuilder<QueryBuilder> {
+  atValue: unknown;
+  mapReducer: DimensionalityReductionMapReducer|null = null;
+  selectRandom = false;
+
+  private xorLock = false;
+
   constructor(
     private readonly qbRef: QueryBuilder,
-    public byDdName?: string,
-    public atDdValue?: unknown,
+    public ddName: string,
   ) {}
 
-  by(ddName: string): this {
-    this.byDdName = ddName;
+  // reduction via point selection on a dd axis
+  at(ddValue: unknown): this {
+    this.setXorLock();
+    this.atValue = ddValue;
     return this;
   }
 
-  at(ddValue: unknown): this {
-    this.atDdValue = ddValue;
+  mapReduce(mapReducer: DimensionalityReductionMapReducer): this {
+    this.setXorLock();
+    this.mapReducer = mapReducer;
+    return this;
+  }
+
+  random(): this {
+    this.setXorLock();
+    this.selectRandom = true;
     return this;
   }
 
   up(): QueryBuilder {
-    this.qbRef.projections.push(this);
+    this.validate();
+    this.qbRef.dimensionalityReductions.push(this);
     return this.qbRef;
+  }
+
+  private setXorLock(): void {
+    if (this.xorLock) {
+      throw new Error('More than one reduction methods selected');
+    }
+    this.xorLock = true;
+  }
+
+  private validate(): void {
+    if (!this.xorLock) {
+      throw new Error('No reduction method selected');
+    }
   }
 }
 
@@ -78,7 +107,7 @@ export class QueryBuilder implements IBuilder<IProjection> {
   readonly ddQueries: DdQueryBuilder[] = [];
   readonly mergeKds: string[] = [];
   mergeColumnMapper = QueryBuilder.KD_MERGE_DOTTED;
-  readonly projections: ProjectionBuilder[] = [];
+  readonly dimensionalityReductions: DimensionalityReductionBuilder[] = [];
   querySequencing: IQuerySequencing|null = null;
 
   constructor(
@@ -107,8 +136,8 @@ export class QueryBuilder implements IBuilder<IProjection> {
     return this;
   }
 
-  project(): ProjectionBuilder {
-    return new ProjectionBuilder(this);
+  dr(ddName: string): DimensionalityReductionBuilder {
+    return new DimensionalityReductionBuilder(this, ddName);
   }
 
   exec(): IProjection {
