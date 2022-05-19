@@ -4,3 +4,5 @@ export * from './db';
 export * from './schema';
 export * from './editor';
 export * from './query';
+
+import './demo';
